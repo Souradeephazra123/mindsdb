@@ -1,0 +1,58 @@
+import json
+import requests
+
+class SAPCRMHandler:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.base_url = "https://api.openconnectors.us2.ext.hana.ondemand.com/elements/api-v2"  
+    def _make_request(self, endpoint, method='GET', data=None):
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json',
+        }
+        url = f'{self.base_url}/{endpoint}'
+
+        if method == 'GET':
+            response = requests.get(url, headers=headers)
+        elif method == 'POST':
+            response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        return response
+
+    def get_data(self, resource_id):
+        # Implement logic to retrieve data from SAP CRM
+        endpoint = f'endpoint/{resource_id}'  # Replace with the actual endpoint
+        response = self._make_request(endpoint, method='GET')
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Failed to retrieve data. Status code: {response.status_code}")
+            return None
+
+    def create_data(self, data):
+        # Implement logic to create data in SAP CRM
+        endpoint = 'endpoint'  # Replace with the actual endpoint
+        response = self._make_request(endpoint, method='POST', data=data)
+
+        if response.status_code == 201:
+            print("Data created successfully.")
+        else:
+            print(f"Failed to create data. Status code: {response.status_code}")
+
+    # Other methods for various SAP CRM actions
+
+# Example usage
+if __name__ == '__main__':
+    api_key = 'your_api_key_here'
+    sapcrm = SAPCRMHandler(api_key)
+
+    # Example: Get data by resource ID
+    resource_id = '123'
+    data = sapcrm.get_data(resource_id)
+    if data:
+        print(data)
+
+    # Example: Create data
+    new_data = {'field1': 'value1', 'field2': 'value2'}
+    sapcrm.create_data(new_data)
